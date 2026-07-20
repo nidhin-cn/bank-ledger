@@ -89,15 +89,34 @@ const userLogoutController = async (req, res) => {
     return res.status(200).json({ message: "User logged out successfully" });
   }
 
-  res.clearCookie("token", "");
+  res.clearCookie("token");
 
   await Tokenblacklist.create({ token: token });
 
   res.status(200).json({ message: "User logged out successfully" });
 };
 
+/**
+ * @route GET /api/auth/get-me
+ * @description get the details of the logged in user
+ * @access Private
+ */
+const getMeController = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.status(200).json({
+      messgae: "User details fetched successfully",
+      user: { id: user._id, email: user.email, name: user.name },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export default {
   userRegisterController,
   userLoginController,
   userLogoutController,
+  getMeController,
 };
